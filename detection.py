@@ -48,37 +48,6 @@ class detection:
         print("Model", self.model_name, "successfully loaded")
 
         
-    # def create_boundingbox(self, image):
-    #     input_tensor = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2RGB)
-    #     input_tensor = tf.convert_to_tensor(input_tensor, dtype= tf.uint8)
-    #     input_tensor = input_tensor[tf.newaxis, ...]
-        
-    #     detections = self.model(input_tensor)
-    #     bbox = detections['detection_boxes'][0].numpy()
-    #     class_index = detections['detection_classes'][0].numpy().astype(np.int32)
-    #     class_scores = detections['detection_scores'][0].numpy()
-        
-    #     imH, imW, imC = image.shape
-        
-    #     if len(bbox) != 0:
-    #         for i in range(0, len(bbox)):
-    #             bbox = tuple(bbox[i].tolist())
-    #             class_confidence = (100 * class_scores[i])
-    #             class_index = class_index[i]
-    #             class_label_text = self.class_list[class_index]
-    #             class_color = self.color_list[class_index]
-                
-    #             display_text = '{}: {}%'.format(class_label_text, class_confidence)
-    #             ymin, xmin, ymax, xmax = bbox
-                
-    #             # print(ymin, xmin, ymax, xmax)
-    #             # break
-    #             xmin, xmax, ymin, ymax = (xmin*imW, xmax*imW, ymin*imH, ymax*imH)
-    #             xmin, xmax, ymin, ymax = int(xmin), int(xmax), int(ymin), int(ymax)
-                
-    #             cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color = class_color, thickness= 1)
-                
-    #     return image
     def create_boundingbox(self, image, treshold = 0.5):
         input_tensor = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2RGB)
         input_tensor = tf.convert_to_tensor(input_tensor, dtype=tf.uint8)
@@ -136,28 +105,26 @@ class detection:
         cv2.destroyAllWindows()
         
 
-    def predict_camera(self, threshold = 0.5):
-        # Open video capture device
-        cap = cv2.VideoCapture(0)  # 0 for the default camera, you can change it if you have multiple cameras
-
+    def predict_camera(self, threshold=0.5):
+        cap = cv2.VideoCapture(0)
+        prev_time = 0
+        
         while True:
-            # Capture frame-by-frame
             ret, frame = cap.read()
-
             if not ret:
                 print("Error: Failed to capture frame")
                 break
-
-            # Perform object detection on the frame
+            
+            current_time = time.time()
+            fps = 1 / (current_time - prev_time)
+            prev_time = current_time
+            
             bbox_frame = self.create_boundingbox(frame, threshold)
-
-            # Display the resulting frame
+            cv2.putText(bbox_frame, f"FPS: {int(fps)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            
             cv2.imshow('Frame', bbox_frame)
-
-            # Break the loop when 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-        # Release the capture device and close OpenCV windows
         cap.release()
         cv2.destroyAllWindows()
