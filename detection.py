@@ -2,7 +2,6 @@ import cv2, time, os, tensorflow as tf
 import numpy as np
 from tensorflow.python.keras.utils.data_utils import get_file
 
-
 np.random.seed(100)
 
 class detection:
@@ -88,8 +87,8 @@ class detection:
         cv2.destroyAllWindows()
         
 
-    def predict_camera(self, threshold=0.5):
-        cap = cv2.VideoCapture(0)
+    def predict_camera(self, video_url = 0, threshold=0.5):
+        cap = cv2.VideoCapture(video_url)
         prev_time = 0
         
         while True:
@@ -106,7 +105,24 @@ class detection:
             
             flipped_frame = cv2.flip(frame, 1)
             bbox_frame = self.create_boundingbox(flipped_frame, threshold)
-            cv2.putText(bbox_frame, f"FPS: {int(fps)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            
+            fps_text = f"FPS: {int(fps)}"
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            font_scale = 0.8
+            font_thickness = 2
+            text_size, _ = cv2.getTextSize(fps_text, font, font_scale, font_thickness)
+            text_w, text_h = text_size
+            text_x = 10
+            text_y = 30
+            
+            fps_back = cv2.rectangle(bbox_frame, (text_x, text_y - text_h - 10), (text_x + text_w + 10, text_y + 10), (100, 100, 100), -1)
+            cv2.putText(fps_back, fps_text, (text_x, text_y), font, font_scale, (255, 255, 255), font_thickness, lineType=cv2.LINE_AA)
+            
+            # Create named window
+            cv2.namedWindow("Frame", cv2.WINDOW_NORMAL)
+            
+            # Set window size
+            cv2.resizeWindow("Frame", 800, 600)
             
             cv2.imshow('Frame', bbox_frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -114,3 +130,5 @@ class detection:
 
         cap.release()
         cv2.destroyAllWindows()
+        
+        
