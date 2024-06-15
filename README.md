@@ -1,4 +1,3 @@
-
 ##  Tensorflow
 ![copy](https://www.tensorflow.org/images/tf_logo_horizontal.png)
  
@@ -28,16 +27,37 @@ tf_vision\Scripts\activate
 ```
 
 ## Install tensorflow and opencv
-
+For latest version......
 ```bash
-pip Install tensorflow
+pip install tensorflow
 ```
 ```bash
-pip Install opencv-python
+pip install opencv-python
 ```
 
 wait.... select interpreter of vs code to your selected virtual environment from the bottom right corner.
 
-ok now run driver code and done. 
+But it will run using cpu resources. So, lets run using ``gpu`` so that it can use more cores.
+But, native windows does not support gpu on tensorflow version greater than ``2.10.0``..........Also, package seems to be removed right now for ``tensorflow-gpu==2.10.0`` using ``pip``. 
 
-To be continued...
+For compatiblity see here ==> https://www.tensorflow.org/install/source_windows
+
+So, lets do it using ``conda``
+
+Create virtual env using conda first and activate.
+```bash
+conda create -n conda_env python==3.9
+conda activate conda_env
+```
+Now, select interpreter of vs code to your selected virtual environment from the bottom right corner.
+
+Ok, now install cudatoolkit and cudnn for gpu support.
+```bash
+conda install cudatoolkit=11.2 cudnn=8.1 -c=conda-forge
+```
+Now install tensorflow-gpu version 2.10.0 and opencv-python
+```bash
+pip install tensorflow-gpu==2.10.0
+pip install opencv-python
+```
+Done.
