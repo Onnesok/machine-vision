@@ -11,6 +11,7 @@ class_file = 'coco.names'
 image_path = 'im1.png'
 treshold = 0.5
 video_url = 0
+#video_url = r"R:\movies\tutorials\SparkFun_Arduino_Comparison_Guide.mp4"
 
 detection = detection()
 detection.readclasses(class_file)
